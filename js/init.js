@@ -3,7 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { Tween, update } from "three/addons/libs/tween.module.js";
 // 导入水面
-import { Water } from "three/addons/objects/Water2.js";
+import { Water } from "three/addons/objects/Water.js";
 
 // import Stats from "three/addons/libs/stats.module.js";
 
@@ -27,7 +27,10 @@ function init() {
     scene.background = texture;
   });
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    antialias: true,
+  });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -109,7 +112,7 @@ function createWater() {
     textureWidth: 512,
     textureHeight: 512,
     waterNormals: new THREE.TextureLoader().load(
-      "./assets/img/Water_1_M_Flow.jpg",
+      "./assets/img/waternormals.jpg",
       function (texture) {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       }
@@ -117,13 +120,14 @@ function createWater() {
     sunDirection: new THREE.Vector3(),
     sunColor: 0xffffff,
     waterColor: 0x001e0f,
-    distortionScale: 5,
+    distortionScale: 10,
     fog: scene.fog !== undefined,
   });
   water.position.y = -10;
   water.rotation.x = -Math.PI / 2;
   scene.add(water);
 }
+water.material.uniforms.size.value = 0.1;
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -140,7 +144,7 @@ function animate() {
   render();
   update();
   if (water) {
-    // water.material.uniforms["time"].value += 1.0 / 60.0;
+    water.material.uniforms["time"].value += 1.0 / 60.0;
   }
 }
 
